@@ -29,6 +29,17 @@ class ValorAirquality(TethysAppBase):
                 url='valor-airquality',
                 controller='valor_airquality.controllers.home'
             ),
+            UrlMap(
+                name='proposal',
+                url='valor_airquality/proposal',
+                controller='valor_airquality.controllers.proposal'
+            ),
+
+            UrlMap(
+                name='mockups',
+                url='valor_airquality/mockups',
+                controller='valor_airquality.controllers.mockups'
+            ),
         )
 
         return url_maps

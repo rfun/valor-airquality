@@ -1,0 +1,65 @@
+{% extends "valor_airquality/base.html" %}
+{% load tethys_gizmos %}
+
+{% load staticfiles %}
+
+{% block header_buttons %}
+  <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
+    <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
+  </div>
+{% endblock %}
+
+{% block app_content %}
+<h1>Mockup Diagrams</h1>
+<h3>Introduction</h3>
+<p>Air pollution is becoming a concern for many citizens and governmental officials throughout the United States. Along the Wasatch Front in Utah, it is common to see inversions set in, trapping air contaminants in the valleys. The Air Quality Prediction (AQP) tool will help predict air quality in the Utah Valley area. This will allow the user to forecast pollution conditions several days in advance.</p>
+
+<h3>Mockups</h3>
+<p>To help both technical and nontechnical users utilize the AQP tool, the web layout will be minimalistic and simple. Figure 1 shows the landing page for the AQP tool. A large map will dominate the majority of the screen. The user will be able to zoom or use the search bar in the upper right hand corner to navigate to their area of interest. They can then click on a single point which will generate air quality information for that area. They will also be able to select two locations which will generate a route with the relative air quality information between the two points. Clicking on any pin will remove that pin from the map.   </p>
+
+<img src="http://www.et.byu.edu/~j0104406/MockFlow.png"
+ height="500px">
+<p>Figure 1: Landing Page for the Air Quality Prediction Tool</p><br>
+
+<p>The two arrows in the lower right hand corner, if selected, will produce an option ribbon. Figure 2 shows the landing page for the AQP tool with the ribbon shown. The ribbon will have two sliders that will be used to adjust the buffer distance for air quality and the prediction time range.  The small “pin button” in the upper right corner of the ribbon, if selected, will pin the option ribbon open. </p>
+<img src="http://www.et.byu.edu/~j0104406/MockFlow2.png"
+ height="500px">
+<p>Figure 2: Landing page for the Air Quality Prediction Tool with Ribbon</p><br>
+
+<p>There will be an information icon in the lower left hand corner. This icon, if selected, will open an information window. Figure 3 shows the information window. In this window, detailed instruction on how to use the app will be listed.</p>
+<img src="http://www.et.byu.edu/~j0104406/MockFlow3.png"
+ height="500px">
+<p>Figure 3: Information Window for the Air Quality Prediction Tool</p><br>
+
+<h3>Conclusion</h3>
+<p>The Air Quality Prediction tool will quickly and accurately predicate air quality for the user. The user interface for the app is designed to helping users from all backgrounds operate this web application quickly. With the minimalistic interface, the application will not only allow for air quality predictions in local communicates, but will predict the air quality days in advance.</p>
+
+{% endblock %}
+
+{# Use the after_app_content block for modals #}
+{% block after_app_content %}
+  <!-- Example Modal -->
+  <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h5 class="modal-title" id="help-modal-label">Example Modal</h5>
+        </div>
+        <div class="modal-body">
+          <p>You can add custom buttons to the app header using the <code>header_buttons</code> block. Use anchor/link tags for the button and wrap it in a div with the class <code>header-button</code>. For buttons with the gliphyicons, add the <code>glyphicon-button</code> class as well.</p>
+          <p>Ever have trouble using a modal in a Tethys app? Use the <code>after_app_content</code> block for modal content to allow them to function properly. See: <a href="https://getbootstrap.com/javascript/#modals">Bootstrap Modals</a></p>
+          <p>Add tooltips to any element by adding the <code>data-toggle</code>, <code>data-placement</code>, and <code>title</code> attributes to the button. See: <a href="https://getbootstrap.com/javascript/#tooltips">Bootstrap Tooltips</a></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block app_actions %}
+
+{% endblock %}

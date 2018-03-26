@@ -72,3 +72,25 @@ def home(request):
     }
 
     return render(request, 'valor_airquality/home.html', context)
+
+def proposal(request):
+    """
+    proposal page for my app
+    """
+    context={
+
+
+    }
+
+    return render(request, 'valor_airquality/proposal.html', context)
+
+def mockups(request):
+    """
+    mockups page for my app
+    """
+    context={
+
+
+    }
+
+    return render(request, 'valor_airquality/mockups.html', context)

@@ -1,0 +1,90 @@
+{% extends "valor_airquality/base.html" %}
+{% load tethys_gizmos %}
+
+{% block header_buttons %}
+  <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
+    <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
+  </div>
+{% endblock %}
+
+{% block app_content %}
+<h1>Proposal: Air Quality Prediction App</h1>
+<h3>Introduction</h3>
+<p>Air pollution is becoming a concern for many citizens and governmental officials throughout the United States. Several measures are being taken to reduce fuel and other emissions to improve air quality. Along the Wasatch Front in Utah, it is common to see inversions set in, trapping polluted air in the valleys. These inversions are especially prevalent during the winter months. </p>
+<p>The proposed project is to create a web-based geographical information systems (GIS) tool that can help predict air quality in the Utah Valley area. This will allow the user to forecast pollution conditions in the future. The idea for this project comes from a project completed in the Fall 2014 semester at BYU for the Civil Engineering GIS class. The mentioned GIS class project used emission point sources and wind data to estimate the spread of pollutants in the air in Utah County, Utah. The purpose of this project is to add onto the GIS class project idea by including non-point emission sources, live data, and user controls on a web application. </p>
+
+<h3>Data and Analysis</h3>
+<p>The proposed web application will require multiple forms of data. To accurately predict the air quality in specific areas, both past and live data will be collected and analyzed. The foreseeable data that is required for this web application are listed below in general categories. The data listed will be distributed to the web application via map services. The main constituents that will be modeled include particulates, ozone, oxides of nitrogen, carbon monoxide, and sulfur dioxide.   </p>
+<p>
+  <ul>
+    <li>Map of County Boundaries </li>
+    <li>Map of Municipalities </li>
+    <li>Map of Land Use (Industrial, residential, commercial)  </li>
+    <li>Point source emissions (point sources locations, point source quality)</li>
+    <li>Non-point source emissions (typical vehicle emission values, fires) </li>
+    <li>Inversion data (Air temperature, jet stream, air pressure)  </li>
+    <li>Climatological data (wind speed, wind direction, precipitation)</li>
+    <li>Traffic Data (Volume, types of vehicles, traffic patterns) </li>
+</ul>
+</p>
+<p>Several data analysis tools will be used to analyze the vector and raster data. All raster data will need to be projected into the appropriate coordinate system. Point source emissions will be modeled using the Gaussian probability curve model. This model will describe the concentration of the pollutants at any distance downwind from the point sources. Live wind data will have the flow direction tool used to create a raster with direction which can then be used in the Gaussian model. The concentrations of constituents from point-sources will then be reclassified into the EPA's Air Quality Index (AQI). Some of the point source raster data may need to be interpolated using either IDW or kriging. Estimated traffic volumes on roadways will be collected and predetermined vehicle emission rates will be used to estimate the emission from vehicles. The emissions will be defined separately for passenger vehicles and trucks. These non-point source concentrations will then be modeled using the EPA's Motor Vehicle Emission Simulator (MOVES).  </p>
+
+<h3>Web Application </h3>
+<p>The web application will have several functions on the front-end to give the user the ability to manipulate the results shown on the screen. The following are the proposed functions: </p>
+<ul>
+  <li>Pick a specific location on a map (neighborhood, city, building)</li>
+  <li>Pick a specific day on a slider (Limited to predicting a few weeks in advance)  </li>
+  <li>Change the desired buffer zone distances on a slider (Air quality at certain distances from point sources) </li>
+  <li>Enter a start and end destination and get a prediction of the pollution on your journey </li>
+</ul>
+<p>On the backend interface of the web application, a model will be built in which each pollution source will be defined as an asset with certain properties such as if it can move or not, what speeds it can travel at, and what sort of pollutants it emits. These assets will be allowed to interact with the system which will be the environment in this case consisting of system properties such as wind, temperature, humidity, etc. The state of this model will be fed into Geoprocessing models to calculate and predict the spread and impact of the particles at any particular instant of time. The code for this project will be stored on GitHub, at the following URL account: https://github.com/rfun/byu-514-valor. The source code will be licensed under MIT. </p>
+
+<h3>Project Team</h3>
+<p>The project is broken down into several subprojects. The table below shows the breakdown of these subprojects and who will be the team lead for each of those parts.  </p>
+<table style="text-align:center;">
+  <tr>
+    <th style="text-align:center;">Project</th>
+    <th style="text-align:center;">Lead</th>
+  </tr>
+  <tr><td>Geographic Data Collection </td><td>Josh Gibbons </td></tr>
+  <tr><td>Air Quality Data Collection  </td><td>Jacob Olsen  </td></tr>
+  <tr><td>Traffic Data Collection   </td><td>Josh Gibbons  </td></tr>
+  <tr><td>Climatological Data Collection  </td><td>Josh Gibbons  </td></tr>
+  <tr><td>Point Source Air Quality Modeling  </td><td>Jacob Olsen  </td></tr>
+  <tr><td>Non-Point Source Air Quality Modeling   </td><td>Rohit Khattar  </td></tr>
+  <tr><td>Web App Display   </td><td>Rohit Khattar  </td></tr>
+  <tr><td>Final Report  </td><td>Jacob Olsen  </td></tr>
+
+</table>
+<h3>Conclusion</h3>
+<p>The purposed web application will use raster and vector data combined with past and current air quality data to accurately predict air quality. The application will not only allow for air quality predictions in local communicates, but will predict the quality days in advance. As concern for air quality increases the demand for effective air quality prediction tools will also increase. </p>
+
+
+{% endblock %}
+
+{# Use the after_app_content block for modals #}
+{% block after_app_content %}
+  <!-- Example Modal -->
+  <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h5 class="modal-title" id="help-modal-label">Example Modal</h5>
+        </div>
+        <div class="modal-body">
+          <p>You can add custom buttons to the app header using the <code>header_buttons</code> block. Use anchor/link tags for the button and wrap it in a div with the class <code>header-button</code>. For buttons with the gliphyicons, add the <code>glyphicon-button</code> class as well.</p>
+          <p>Ever have trouble using a modal in a Tethys app? Use the <code>after_app_content</code> block for modal content to allow them to function properly. See: <a href="https://getbootstrap.com/javascript/#modals">Bootstrap Modals</a></p>
+          <p>Add tooltips to any element by adding the <code>data-toggle</code>, <code>data-placement</code>, and <code>title</code> attributes to the button. See: <a href="https://getbootstrap.com/javascript/#tooltips">Bootstrap Tooltips</a></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block app_actions %}
+{% endblock %}
