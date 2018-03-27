@@ -34,4 +34,4 @@ def home(request):
 
 
 
-    return render(request, 'valor_airquality/home.html', {'gp_button':gp_button,'slider1':slider1, 'info_box':info_box})
+    return render(request, 'valor_airquality/home-map.html', {'gp_button':gp_button,'slider1':slider1, 'info_box':info_box})
