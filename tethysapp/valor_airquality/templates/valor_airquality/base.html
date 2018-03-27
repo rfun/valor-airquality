@@ -1,4 +1,5 @@
 {% extends "tethys_apps/app_base.html" %}
+{% load tethys_gizmos %}
 
 {% load staticfiles %}
 
@@ -13,9 +14,19 @@
 {% block app_title %}{{ tethys_app.name }}{% endblock %}
 
 {% block app_navigation_items %}
-{% url 'airpollut:home' as home_url %}
+{% url 'valor_airquality:home' as home_url %}
+{% url 'valor_airquality:info' as info_url %}
+
+{% url 'valor_airquality:proposal' as proposal_url %}
+{% url 'valor_airquality:mockups' as mockups_url %}
+
   <li class="title">App Navigation</li>
-  <li class="{% if request.path == home_url %}active{% endif %}"><a href="{% url 'airpollut:home' %}">Home</a></li>
+  <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
+  <li class="{% if request.path == info_url %}active{% endif %}"><a href="{{ info_url }}">Info</a></li>
+  <li class="{% if request.path == proposal_url %}active{% endif %}"><a href="{{ proposal_url }}">Proposal</a></li>
+  <li class="{% if request.path == mockups_url %}active{% endif %}"><a href="{{ mockups_url }}">Mockup Diagrams</a></li>
+
+>>>>>>> jacob
 {% endblock %}
 
 {% block app_content %}

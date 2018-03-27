@@ -33,5 +33,31 @@ def home(request):
 
 
 
-
     return render(request, 'valor_airquality/home-map.html', {'gp_button':gp_button,'slider1':slider1, 'info_box':info_box})
+
+
+def info(request):
+    return render(request, 'valor_airquality/home.html', {})
+
+
+def proposal(request):
+    """
+    proposal page for my app
+    """
+    context={
+
+
+    }
+
+    return render(request, 'valor_airquality/proposal.html', context)
+
+def mockups(request):
+    """
+    mockups page for my app
+    """
+    context={
+
+
+    }
+
+    return render(request, 'valor_airquality/mockups.html', context)
