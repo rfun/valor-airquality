@@ -31,7 +31,7 @@ class ValorAirquality(TethysAppBase):
             ),
             UrlMap(
                 name='info',
-                url='valor-airquality',
+                url='valor-airquality/info',
                 controller='valor_airquality.controllers.info'
             ),
             UrlMap(
