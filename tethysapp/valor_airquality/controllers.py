@@ -29,11 +29,22 @@ def home(request):
                          message='Click on the map within the SLC county. Select your buffer distance and then click on Run. This service takes about 15s to run.',
                          affirmative_button='Ok',
                          width=400,
-                         affirmative_attributes='href=javascript:void(0);')
+                         affirmative_attributes='href=javascript:void(0);'
+    )
 
+    refresh_button = Button(
+        display_text='Refresh',
+        name='button',
+        attributes={
+            'data-toggle': 'tooltip',
+            'data-placement': 'top',
+            'title': 'refresh',
+            'onclick':'app.refresh()'
 
+        },
+    )
 
-    return render(request, 'valor_airquality/home-map.html', {'gp_button':gp_button,'slider1':slider1, 'info_box':info_box})
+    return render(request, 'valor_airquality/home-map.html', {'gp_button':gp_button,'slider1':slider1, 'info_box':info_box, 'refresh_button':refresh_button})
 
 
 def info(request):
