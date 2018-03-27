@@ -11,8 +11,8 @@ class ValorAirquality(TethysAppBase):
     icon = 'valor_airquality/images/icon.gif'
     package = 'valor_airquality'
     root_url = 'valor-airquality'
-    color = '#2c3e50'
-    description = 'Place a brief description of your app here.'
+    color = '#64b5f6'
+    description = 'Monitor Air Quality in your neighborhood'
     tags = ''
     enable_feedback = False
     feedback_emails = []

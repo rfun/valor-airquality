@@ -1,74 +1,38 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from tethys_sdk.gizmos import Button
+from tethys_sdk.gizmos import Button, RangeSlider, MessageBox
 
-@login_required()
 def home(request):
-    """
-    Controller for the app home page.
-    """
-    save_button = Button(
-        display_text='',
-        name='save-button',
-        icon='glyphicon glyphicon-floppy-disk',
-        style='success',
-        attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Save'
+    
+
+    gp_button = Button(
+    display_text='Run',
+    name='gp_button',
+    icon='glyphicon glyphicon-globe',
+    attributes={
+        'data-toggle':'tooltip',
+        'data-placement':'top',
+        'title':'Run GeoProcessing Service'
         }
     )
 
-    edit_button = Button(
-        display_text='',
-        name='edit-button',
-        icon='glyphicon glyphicon-edit',
-        style='warning',
-        attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Edit'
-        }
+    slider1 = RangeSlider(display_text='Distance around your location (in miles)',
+                          name='distance_slider',
+                          min=1,
+                          max=25,
+                          initial=5,
+                          step=1,
+                          attributes={"onchange:updateSlider('distance2', this);"}
     )
 
-    remove_button = Button(
-        display_text='',
-        name='remove-button',
-        icon='glyphicon glyphicon-remove',
-        style='danger',
-        attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Remove'
-        }
-    )
+    info_box = MessageBox(name='info_box',
+                         title='Message Box Title',
+                         message='Click on the map within the SLC county. Select your buffer distance and then click on Run. This service takes about 15s to run.',
+                         affirmative_button='Ok',
+                         width=400,
+                         affirmative_attributes='href=javascript:void(0);')
 
-    previous_button = Button(
-        display_text='Previous',
-        name='previous-button',
-        attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Previous'
-        }
-    )
 
-    next_button = Button(
-        display_text='Next',
-        name='next-button',
-        attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Next'
-        }
-    )
 
-    context = {
-        'save_button': save_button,
-        'edit_button': edit_button,
-        'remove_button': remove_button,
-        'previous_button': previous_button,
-        'next_button': next_button
-    }
 
-    return render(request, 'valor_airquality/home.html', context)
+    return render(request, 'valor_airquality/home.html', {'gp_button':gp_button,'slider1':slider1, 'info_box':info_box})
