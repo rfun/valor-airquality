@@ -21,8 +21,7 @@ def home(request):
                           min=1,
                           max=25,
                           initial=5,
-                          step=1,
-                          attributes={"onchange:updateSlider('distance2', this);"}
+                          step=1
     )
 
     info_box = MessageBox(name='info_box',

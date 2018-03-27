@@ -5,14 +5,15 @@ const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/C
 const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/pollution21/GPServer/GetPollution32343";
 var gpUrl = "http://geoserver2.byu.edu/arcgis/rest/services/sherry/BufferPoints/GPServer/Buffer%20Points";
 
+let bufDist = 5;
+
 function toggleDEM() {
     dem.visible = demLayerBox.checked;
 }
 
 
-function updateSlider(name, details){
-    console.log(name);
-    console.log(details);
+function updateSliderDisplayValue(name, details){
+    bufDist = details.value;
 }
 
 // Get esri arcmap
@@ -134,7 +135,7 @@ require([
             //Submitting job. Show loader
 
             var bfDistance = new LinearUnit();
-            bfDistance.distance = 5;
+            bfDistance.distance = bufDist;
             bfDistance.units = "miles";
 
 
