@@ -19,8 +19,8 @@ def home(request):
     slider1 = RangeSlider(display_text='Distance around your location (in miles)',
                           name='distance_slider',
                           min=1,
-                          max=25,
-                          initial=5,
+                          max=10,
+                          initial=2,
                           step=1
     )
 

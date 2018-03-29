@@ -5,7 +5,7 @@ const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/C
 const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/pollution21/GPServer/GetPollution32343";
 var gpUrl = "http://geoserver2.byu.edu/arcgis/rest/services/sherry/BufferPoints/GPServer/Buffer%20Points";
 
-let bufDist = 5;
+let bufDist = 2;
 
 function toggleDEM() {
     dem.visible = demLayerBox.checked;
@@ -15,24 +15,25 @@ function toggleDEM() {
 // Get esri arcmap
 require([
         "esri/Map",
+        "esri/Graphic",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
         "esri/layers/MapImageLayer",
         "esri/layers/GraphicsLayer",
         "esri/layers/support/ImageParameters",
         "esri/symbols/SimpleFillSymbol",
-        "esri/Graphic",
         "esri/geometry/Circle",
         "esri/geometry/Point",
         "esri/tasks/Geoprocessor",
         "esri/tasks/support/LinearUnit",
         "esri/tasks/support/FeatureSet",
+        "esri/widgets/Search",
         "dojo/on",
         "dojo/dom",
         "dojo/_base/lang",
         "dojo/domReady!"
     ],
-    (Map, MapView, FeatureLayer, MapImageLayer, GraphicsLayer, ImageParameters, SimpleFillSymbol, Graphic, Circle, Point, Geoprocessor, LinearUnit, FeatureSet, on, dom, lang) => {
+    (Map, Graphic, MapView, FeatureLayer, MapImageLayer, GraphicsLayer, ImageParameters, SimpleFillSymbol, Circle, Point, Geoprocessor, LinearUnit, FeatureSet, Search, on, dom, lang) => {
 
         roadsLayerBox = document.querySelector('input[id="roadsLayer"]');
         demLayerBox = document.querySelector('input[id="demLayer"]');
@@ -75,6 +76,9 @@ require([
                 width: 1
             }
         };
+
+
+        
         map = new Map({
             basemap: "streets",
             layers: [graphicsLayer]
@@ -82,9 +86,20 @@ require([
         view = new MapView({
             container: "map",
             center: [-111.859274, 40.732873],
+            scale: 123456789,
             // center: [-72.688249, 44.48276],
             zoom: 12,
             map: map
+        });
+
+
+        var searchWidget = new Search({
+            view: view
+        });
+
+        // Add the search widget to the top right corner of the view
+        view.ui.add(searchWidget, {
+            position: "top-right"
         });
 
         // $('input[id=demLayer]').on('switchChange.bootstrapSwitch', function(event, state) { dem.visible = demLayerBox.checked; });
@@ -204,13 +219,13 @@ require([
         }
 
 
-        document.querySelector('input[name="distance_slider"]').onchange=updateSliderDisplayValue;
+        document.querySelector('input[name="distance_slider"]').onchange = updateSliderDisplayValue;
 
 
         function updateSliderDisplayValue(evt) {
             bufDist = document.querySelector('input[name="distance_slider"]').value;
             // update display value
-            document.querySelector('span[id="dist_val"]').innerHTML=bufDist;
+            document.querySelector('span[id="dist_val"]').innerHTML = bufDist;
             addCircle();
         }
 
