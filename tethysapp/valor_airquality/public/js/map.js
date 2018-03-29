@@ -1,4 +1,4 @@
-var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox;
+var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox, app;
 
 // Geoprocessing service url  
 const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/CreateWatershedPolygon/GPServer/Create%20WaterShed%20Polygon";
@@ -192,6 +192,12 @@ require([
             //     view.goTo(response.extent);
             // });
         }
+
+        function refresh(){
+        graphicsLayer.removeAll();
+        count = 0;
+        }
+        app = {refresh:refresh};
 
 
 
