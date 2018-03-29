@@ -1,4 +1,4 @@
-var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox;
+var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox, app, resultLayer;
 
 // Geoprocessing service url  
 const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/CreateWatershedPolygon/GPServer/Create%20WaterShed%20Polygon";
@@ -152,56 +152,6 @@ require([
 
 
             // input parameters 
-            var params = {
-                "Point": featureSet,
-                "Input_Buffer_Distanct": bfDistance
-            };
-
-
-            document.getElementById("gpLoader").style.display = "block";;
-
-            gp.submitJob(params).then((result) => {
-
-                    //set imageParameters
-
-                    var imageParams = new ImageParameters({
-                        format: "png32",
-                        dpi: 300
-
-                    });
-
-                    // get the task result as a MapImageLayer
-                    var resultLayer = gp.getResultMapImageLayer(result.jobId);
-                    resultLayer.opacity = 0.7;
-                    resultLayer.title = "pollutionSurface";
-
-                    // add the result layer to the map
-                    map.layers.add(resultLayer);
-                    // Job done
-                    document.getElementById("gpLoader").style.display = "none";;
-
-                },
-                (err) => {
-                    console.log("gp error: ", err)
-                    document.getElementById("gpLoader").style.display = "none";;
-                },
-                (data) => { console.log(data.jobStatus, data) });
-        })
-
-        let symbologyCircle = {
-            type: "simple-fill",
-            // style: "none",
-            outline: {
-                width: 1,
-                color: "#FF0055",
-                style: "solid"
-            }
-        };
-
-        let currentCircleGraphic;
-
-        function addCircle() {
-
             // Remove the circle if exists
             if (currentCircleGraphic)
                 graphicsLayer.remove(currentCircleGraphic);
@@ -221,6 +171,12 @@ require([
 
         document.querySelector('input[name="distance_slider"]').onchange = updateSliderDisplayValue;
 
+        function refresh() {
+            map.layers.remove(resultLayer);
+            graphicsLayer.removeAll();
+            count = 0;
+        }
+        app = { refresh };
 
         function updateSliderDisplayValue(evt) {
             bufDist = document.querySelector('input[name="distance_slider"]').value;
