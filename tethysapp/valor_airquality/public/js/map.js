@@ -78,7 +78,7 @@ require([
         };
 
 
-        
+
         map = new Map({
             basemap: "streets",
             layers: [graphicsLayer]
@@ -152,6 +152,61 @@ require([
 
 
             // input parameters 
+            var params = {
+                "Point": featureSet,
+                "Input_Buffer_Distanct": bfDistance
+            };
+
+
+            document.getElementById("gpLoader").style.display = "block";;
+
+            gp.submitJob(params).then((result) => {
+                    // Clear resultLayer if it exists
+
+                    if (resultLayer)
+                        map.layers.remove(resultLayer);
+
+
+                    //set imageParameters
+
+                    var imageParams = new ImageParameters({
+                        format: "png32",
+                        dpi: 300
+
+                    });
+
+                    // get the task result as a MapImageLayer
+                    resultLayer = gp.getResultMapImageLayer(result.jobId);
+                    resultLayer.opacity = 0.7;
+                    resultLayer.title = "pollutionSurface";
+
+                    // add the result layer to the map
+                    map.layers.add(resultLayer);
+                    // Job done
+                    document.getElementById("gpLoader").style.display = "none";;
+
+                },
+                (err) => {
+                    console.log("gp error: ", err)
+                    document.getElementById("gpLoader").style.display = "none";;
+                },
+                (data) => { console.log(data.jobStatus, data) });
+        })
+
+        let symbologyCircle = {
+            type: "simple-fill",
+            // style: "none",
+            outline: {
+                width: 1,
+                color: "#FF0055",
+                style: "solid"
+            }
+        };
+
+        let currentCircleGraphic;
+
+        function addCircle() {
+
             // Remove the circle if exists
             if (currentCircleGraphic)
                 graphicsLayer.remove(currentCircleGraphic);
@@ -172,7 +227,8 @@ require([
         document.querySelector('input[name="distance_slider"]').onchange = updateSliderDisplayValue;
 
         function refresh() {
-            map.layers.remove(resultLayer);
+            if (resultLayer)
+                map.layers.remove(resultLayer);
             graphicsLayer.removeAll();
             count = 0;
         }
