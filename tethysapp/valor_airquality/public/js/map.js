@@ -1,4 +1,4 @@
-var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox, app;
+var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox, app, resultLayer;
 
 // Geoprocessing service url  
 const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/CreateWatershedPolygon/GPServer/Create%20WaterShed%20Polygon";
@@ -12,7 +12,7 @@ function toggleDEM() {
 }
 
 
-function updateSliderDisplayValue(name, details){
+function updateSliderDisplayValue(name, details) {
     bufDist = details.value;
 }
 
@@ -159,7 +159,7 @@ require([
                     });
 
                     // get the task result as a MapImageLayer
-                    var resultLayer = gp.getResultMapImageLayer(result.jobId);
+                    resultLayer = gp.getResultMapImageLayer(result.jobId);
                     resultLayer.opacity = 0.7;
                     resultLayer.title = "pollutionSurface";
 
@@ -193,15 +193,12 @@ require([
             // });
         }
 
-        function refresh(){
-        graphicsLayer.removeAll();
-        count = 0;
+        function refresh() {
+            map.layers.remove(resultLayer);
+            graphicsLayer.removeAll();
+            count = 0;
         }
-        app = {refresh:refresh};
-
-
-
-
+        app = { refresh };
 
 
         // on(dom.byId("demLayer"), "change", function() { dem.visible = demLayerBox.checked; });
