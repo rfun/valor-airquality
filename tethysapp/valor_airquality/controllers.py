@@ -25,7 +25,7 @@ def home(request):
     )
 
     info_box = MessageBox(name='info_box',
-                         title='Message Box Title',
+                         title='Info',
                          message='Click on the map within the SLC county. Select your buffer distance and then click on Run. This service takes about 15s to run.',
                          affirmative_button='Ok',
                          width=400,
