@@ -16,7 +16,7 @@ def home(request):
         }
     )
 
-    slider1 = RangeSlider(display_text='Distance around your location (in miles)',
+    slider1 = RangeSlider(display_text='Buffer Radius (miles)',
                           name='distance_slider',
                           min=1,
                           max=10,
