@@ -5,36 +5,35 @@ const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/C
 const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/GetAirQulality/GPServer/GetAirQuality";
 var gpUrl = "http://geoserver2.byu.edu/arcgis/rest/services/sherry/BufferPoints/GPServer/Buffer%20Points";
 
-let bufDist = 5;
+let bufDist = 2;
 
 function toggleDEM() {
     dem.visible = demLayerBox.checked;
 }
 
 
-function updateSliderDisplayValue(name, details) {
-    bufDist = details.value;
-}
-
 // Get esri arcmap
 require([
         "esri/Map",
+        "esri/Graphic",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
         "esri/layers/MapImageLayer",
         "esri/layers/GraphicsLayer",
         "esri/layers/support/ImageParameters",
-        "esri/Graphic",
+        "esri/symbols/SimpleFillSymbol",
+        "esri/geometry/Circle",
         "esri/geometry/Point",
         "esri/tasks/Geoprocessor",
         "esri/tasks/support/LinearUnit",
         "esri/tasks/support/FeatureSet",
+        "esri/widgets/Search",
         "dojo/on",
         "dojo/dom",
         "dojo/_base/lang",
         "dojo/domReady!"
     ],
-    (Map, MapView, FeatureLayer, MapImageLayer, GraphicsLayer, ImageParameters, Graphic, Point, Geoprocessor, LinearUnit, FeatureSet, on, dom, lang) => {
+    (Map, Graphic, MapView, FeatureLayer, MapImageLayer, GraphicsLayer, ImageParameters, SimpleFillSymbol, Circle, Point, Geoprocessor, LinearUnit, FeatureSet, Search, on, dom, lang) => {
 
         roadsLayerBox = document.querySelector('input[id="roadsLayer"]');
         demLayerBox = document.querySelector('input[id="demLayer"]');
@@ -71,12 +70,15 @@ require([
         // symbol for buffered polygon
         var fillSymbol = {
             type: "simple-fill", // autocasts as new SimpleFillSymbol()
-            color: [226, 119, 40, 0.75],
+            // color: [226, 119, 40, 0.75],
             outline: { // autocasts as new SimpleLineSymbol()
                 color: [255, 255, 255],
                 width: 1
             }
         };
+
+
+
         map = new Map({
             basemap: "streets",
             layers: [graphicsLayer]
@@ -84,9 +86,20 @@ require([
         view = new MapView({
             container: "map",
             center: [-111.859274, 40.732873],
+            scale: 123456789,
             // center: [-72.688249, 44.48276],
             zoom: 12,
             map: map
+        });
+
+
+        var searchWidget = new Search({
+            view: view
+        });
+
+        // Add the search widget to the top right corner of the view
+        view.ui.add(searchWidget, {
+            position: "top-right"
         });
 
         // $('input[id=demLayer]').on('switchChange.bootstrapSwitch', function(event, state) { dem.visible = demLayerBox.checked; });
@@ -103,13 +116,13 @@ require([
             wkid: 102100
         }
 
-        let featureSet;
+        let featureSet, point;
 
         //add map click function
         view.on("click", (event) => {
 
             graphicsLayer.removeAll();
-            let point = new Point({
+            point = new Point({
                 longitude: event.mapPoint.longitude,
                 latitude: event.mapPoint.latitude
             });
@@ -125,8 +138,7 @@ require([
             featureSet = new FeatureSet();
             featureSet.features = inputGraphicContainer;
 
-
-
+            addCircle(event);
 
         });
 
@@ -149,6 +161,11 @@ require([
             document.getElementById("gpLoader").style.display = "block";;
 
             gp.submitJob(params).then((result) => {
+                    // Clear resultLayer if it exists
+
+                    if (resultLayer)
+                        map.layers.remove(resultLayer);
+
 
                     //set imageParameters
 
@@ -166,11 +183,7 @@ require([
                     // add the result layer to the map
                     map.layers.add(resultLayer);
                     // Job done
-
                     document.getElementById("gpLoader").style.display = "none";;
-
-
-
 
                 },
                 (err) => {
@@ -180,29 +193,60 @@ require([
                 (data) => { console.log(data.jobStatus, data) });
         })
 
+        let symbologyCircle = {
+            type: "simple-fill",
+            // style: "none",
+            outline: {
+                width: 1,
+                color: "#FF0055",
+                style: "solid"
+            }
+        };
+
+        let currentCircleGraphic;
+
+        function addCircle() {
+
+            // Remove the circle if exists
+            if (currentCircleGraphic)
+                graphicsLayer.remove(currentCircleGraphic);
+
+            let currentCircle = new Circle(point, {
+                geodesic: true,
+                "radius": bufDist,
+                "radiusUnit": "miles"
+            });
+            currentCircleGraphic = new Graphic({
+                geometry: currentCircle,
+                symbol: symbologyCircle
+            });
+            graphicsLayer.add(currentCircleGraphic);
+        }
+
+
+        document.querySelector('input[name="distance_slider"]').onchange = updateSliderDisplayValue;
+
+        function refresh() {
+            if (resultLayer)
+                map.layers.remove(resultLayer);
+            graphicsLayer.removeAll();
+            count = 0;
+        }
+        app = { refresh };
+
+        function updateSliderDisplayValue(evt) {
+            bufDist = document.querySelector('input[name="distance_slider"]').value;
+            // update display value
+            document.querySelector('span[id="dist_val"]').innerHTML = bufDist;
+            addCircle();
+        }
+
         function drawResult(data) {
 
             graphicsLayer.removeAll();
             var polygon_feature = data.value.features[0];
             polygon_feature.symbol = fillSymbol;
             graphicsLayer.add(polygon_feature);
-            // graphicsLayer.queryExtent().then(function(response) {
-            //     console.log(response.extent);
-            //     // go to the extent of all the graphics in the layer view
-            //     view.goTo(response.extent);
-            // });
         }
-
-        function refresh() {
-            map.layers.remove(resultLayer);
-            graphicsLayer.removeAll();
-            count = 0;
-        }
-        app = { refresh };
-
-
-        // on(dom.byId("demLayer"), "change", function() { dem.visible = demLayerBox.checked; });
-        // on(dom.byId("roadsLayer"), "change", function() { roadsLayer.visible = roadsLayerBox.checked; });
-
 
     });

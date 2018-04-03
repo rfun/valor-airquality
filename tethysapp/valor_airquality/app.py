@@ -12,7 +12,7 @@ class ValorAirquality(TethysAppBase):
     package = 'valor_airquality'
     root_url = 'valor-airquality'
     color = '#64b5f6'
-    description = 'This app provides air quality index estimates in Salt Lake County based on station data and date. Select a point or route to determine the air quality in the surrounding area on a particular day, measured by the Air Quality Index (AQI).'
+    description = 'This app provides air quality index estimates in Salt Lake County based on station data and date.'
     tags = ''
     enable_feedback = False
     feedback_emails = []

@@ -19,13 +19,13 @@ def home(request):
     slider1 = RangeSlider(display_text='Distance around your location (in miles)',
                           name='distance_slider',
                           min=1,
-                          max=25,
-                          initial=5,
+                          max=10,
+                          initial=2,
                           step=1
     )
 
     info_box = MessageBox(name='info_box',
-                         title='Message Box Title',
+                         title='Info',
                          message='Click on the map within the SLC county. Select your buffer distance and then click on Run. This service takes about 15s to run.',
                          affirmative_button='Ok',
                          width=400,

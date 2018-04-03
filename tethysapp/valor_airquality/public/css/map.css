@@ -9,10 +9,10 @@ body {
 }
 
 #map {
+    top:40px;
+    left:-10px;
     height: 100%;
-    width: 100%;
-    left: 0;
+    width: 85%;
     position: absolute;
-    top: 0;
-    z-index: ;
+    z-index:-5;
 }

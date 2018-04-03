@@ -12,7 +12,12 @@
 
 {% block app_navigation_items %}
 {{ block.super }}
-<li class="seperator"/>
+  <li class="title">GeoProcessing Options</li>
+
+{% gizmo slider1 %}
+
+<div>Current Value: <span id="dist_val">2</span> miles</div>
+
 {% gizmo gp_button %}
 <div id="gpLoader" class="loader" hidden></div>
 {% gizmo refresh_button %}
@@ -35,7 +40,6 @@
 {% endblock %}
 
 {% block app_actions %}
-{% gizmo slider1 %}
 <a href="#info_box" role="button" class="btn btn-success" data-toggle="modal">Info</a>
 {% endblock %}
 
