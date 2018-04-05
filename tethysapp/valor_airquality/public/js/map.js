@@ -2,7 +2,7 @@ var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox, app, resultLayer;
 
 // Geoprocessing service url  
 const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/CreateWatershedPolygon/GPServer/Create%20WaterShed%20Polygon";
-const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/GetAirQulalityTool/GPServer/GetAirQualityTool";
+const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/pollution21/GPServer/GetPollution32343";
 var gpUrl = "http://geoserver2.byu.edu/arcgis/rest/services/sherry/BufferPoints/GPServer/Buffer%20Points";
 
 let bufDist = 2;
@@ -11,6 +11,9 @@ function toggleDEM() {
     dem.visible = demLayerBox.checked;
 }
 
+// Hide the bottom bar
+
+$("#app-actions").hide()
 
 // Get esri arcmap
 require([
@@ -28,7 +31,7 @@ require([
         "esri/tasks/support/LinearUnit",
         "esri/tasks/support/FeatureSet",
         "esri/widgets/Search",
-        "esri/dijit/Scalebar",
+        "esri/widgets/ScaleBar",
         "dojo/parser",
         "dijit/layout/BorderContainer",
         "dijit/layout/ContentPane",
@@ -81,20 +84,9 @@ require([
             }
         };
 
-        function(Map, Scalebar,parser) {
-            parser.parse();
-
         map = new Map({
             basemap: "streets",
             layers: [graphicsLayer]
-        });
-
-        var scalebar = new Scalebar({
-          map: map,
-          // "dual" displays both miles and kilometers
-          // "english" is the default, which displays miles
-          // use "metric" for kilometers
-          scalebarUnit: "dual"
         });
 
         view = new MapView({
@@ -106,6 +98,14 @@ require([
             map: map
         });
 
+        var scalebar = new Scalebar({
+            view: view,
+            unit: "dual"
+        });
+
+        view.ui.add(scalebar, {
+            position: "bottom-left"
+        });
 
         var searchWidget = new Search({
             view: view
