@@ -2,7 +2,7 @@ var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox, app, resultLayer;
 
 // Geoprocessing service url  
 const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/CreateWatershedPolygon/GPServer/Create%20WaterShed%20Polygon";
-const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/GetAirQulality/GPServer/GetAirQuality";
+const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/GetAirQulalityTool/GPServer/GetAirQualityTool";
 var gpUrl = "http://geoserver2.byu.edu/arcgis/rest/services/sherry/BufferPoints/GPServer/Buffer%20Points";
 
 let bufDist = 2;
