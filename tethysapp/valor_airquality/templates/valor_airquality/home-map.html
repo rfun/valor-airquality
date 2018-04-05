@@ -25,6 +25,7 @@
 
 
 {% block header_buttons %}
+<button id="myBtn" class="btn btn-success" onclick="OpenModal()">Instructions</button>
 {% endblock %}
 
 {% block styles %}
@@ -91,8 +92,13 @@
 
 </div>
 
-<div id="map"></div>
-
+<body>
+    <div data-dojo-type="dijit/layout/BorderContainer"
+         data-dojo-props="design:'headline', gutters:false"
+         style="width: 100%; height: 100%; margin: 0;">
+        <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" style="overflow:hidden;"></div>
+    </div>
+</body>
 
 <script>
     // Get the modal
@@ -123,10 +129,7 @@
 {% endblock %}
 
 {% block app_actions %}
-<button id="myBtn" class="btn btn-success" onclick="OpenModal()">Instructions</button>
-<!-- <a href="#info_box" role="button" class="btn btn-success" data-toggle="modal">Info</a> -->
 {% endblock %}
 
 {% block after_app_content %}
-    {% gizmo info_box %}
 {% endblock %}

@@ -28,12 +28,16 @@ require([
         "esri/tasks/support/LinearUnit",
         "esri/tasks/support/FeatureSet",
         "esri/widgets/Search",
+        "esri/dijit/Scalebar",
+        "dojo/parser",
+        "dijit/layout/BorderContainer",
+        "dijit/layout/ContentPane",
         "dojo/on",
         "dojo/dom",
         "dojo/_base/lang",
         "dojo/domReady!"
     ],
-    (Map, Graphic, MapView, FeatureLayer, MapImageLayer, GraphicsLayer, ImageParameters, SimpleFillSymbol, Circle, Point, Geoprocessor, LinearUnit, FeatureSet, Search, on, dom, lang) => {
+    (Map, Graphic, MapView, FeatureLayer, MapImageLayer, GraphicsLayer, ImageParameters, SimpleFillSymbol, Circle, Point, Geoprocessor, LinearUnit, FeatureSet, Search, Scalebar, parser, BorderContainer, ContentPane, on, dom, lang) => {
 
         roadsLayerBox = document.querySelector('input[id="roadsLayer"]');
         demLayerBox = document.querySelector('input[id="demLayer"]');
@@ -77,12 +81,22 @@ require([
             }
         };
 
-
+        function(Map, Scalebar,parser) {
+            parser.parse();
 
         map = new Map({
             basemap: "streets",
             layers: [graphicsLayer]
         });
+
+        var scalebar = new Scalebar({
+          map: map,
+          // "dual" displays both miles and kilometers
+          // "english" is the default, which displays miles
+          // use "metric" for kilometers
+          scalebarUnit: "dual"
+        });
+
         view = new MapView({
             container: "map",
             center: [-111.859274, 40.732873],
