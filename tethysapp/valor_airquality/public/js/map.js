@@ -184,6 +184,7 @@ require([
                     map.layers.add(resultLayer);
                     // Job done
                     document.getElementById("gpLoader").style.display = "none";;
+                    document.getElementById("atr_table").style.display = "none";;
 
                 },
                 (err) => {
@@ -248,5 +249,14 @@ require([
             polygon_feature.symbol = fillSymbol;
             graphicsLayer.add(polygon_feature);
         }
+
+        function hideElem() {
+            document.getElementById("atr_table").style.visiblility="hidden";
+            }
+
+        function showElem() {
+            document.getElementById("atr_table").style.visiblility="visible";
+            }
+
 
     });
