@@ -42,51 +42,12 @@
     <link rel="stylesheet" type="text/css" media="all" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css
     " />
     <link rel="stylesheet" href="https://js.arcgis.com/4.6/esri/css/main.css">
+    <link href="{% static 'valor_airquality/css/main.css' %}" rel="stylesheet"/>
     <link href="{% static 'valor_airquality/css/map.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block app_content %}
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-    /* The Modal (background) */
-    .modal {
-        display: inline;
-        position: fixed; /* Stay in place */
-        z-index: -1;
-        padding-top: 100px;
-        left: 0;
-        top: 0;
-        width: 700px;
-        overflow: auto;
-        background-color: rgb(0,0,0);
-        background-color: rgba(0,0,0,0);
-    }
-
-    /* Modal Content */
-    .modal-content {
-        background-color: #fefefe;
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-    }
-
-    /* The Close Button */
-    .close {
-        color: #aaaaaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-        color: #000;
-        text-decoration: none;
-        cursor: pointer;
-    }
-</style>
 
 <!-- The Modal -->
 <div id="myModal" class="modal">
