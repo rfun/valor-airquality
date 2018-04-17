@@ -1,14 +1,55 @@
-var map, view, dem, roadsLayer, demLayerBox, roadsLayerBox, app, resultLayer;
+var map,
+    view,
+    dem,
+    roadsLayer,
+    demLayerBox,
+    roadsLayerBox,
+    app,
+    resultLayer,
+    validPoint = false;
 
 // Geoprocessing service url  
-const watershedGeoServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/CreateWatershedPolygon/GPServer/Create%20WaterShed%20Polygon";
-const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/pollution21/GPServer/GetPollution32343";
-var gpUrl = "http://geoserver2.byu.edu/arcgis/rest/services/sherry/BufferPoints/GPServer/Buffer%20Points";
+const pollutionServ = "http://geoserver2.byu.edu/arcgis/rest/services/Valor/FinalPollution4/GPServer/GetAirQualityTool";
+const purpleAirSource = "https://www.purpleair.com/json";
 
 let bufDist = 2;
 
 function toggleDEM() {
     dem.visible = demLayerBox.checked;
+}
+
+function Linear(AQIhigh, AQIlow, Conchigh, Conclow, Concentration) {
+    var linear;
+    var Conc = parseFloat(Concentration);
+    var a;
+    a = ((Conc - Conclow) / (Conchigh - Conclow)) * (AQIhigh - AQIlow) + AQIlow;
+    linear = Math.round(a);
+    return linear;
+}
+
+function AQIPM25(Concentration) {
+    var Conc = parseFloat(Concentration);
+    var c;
+    var AQI;
+    c = (Math.floor(10 * Conc)) / 10;
+    if (c >= 0 && c < 12.1) {
+        AQI = Linear(50, 0, 12, 0, c);
+    } else if (c >= 12.1 && c < 35.5) {
+        AQI = Linear(100, 51, 35.4, 12.1, c);
+    } else if (c >= 35.5 && c < 55.5) {
+        AQI = Linear(150, 101, 55.4, 35.5, c);
+    } else if (c >= 55.5 && c < 150.5) {
+        AQI = Linear(200, 151, 150.4, 55.5, c);
+    } else if (c >= 150.5 && c < 250.5) {
+        AQI = Linear(300, 201, 250.4, 150.5, c);
+    } else if (c >= 250.5 && c < 350.5) {
+        AQI = Linear(400, 301, 350.4, 250.5, c);
+    } else if (c >= 350.5 && c < 500.5) {
+        AQI = Linear(500, 401, 500.4, 350.5, c);
+    } else {
+        AQI = null;
+    }
+    return AQI;
 }
 
 // Hide the bottom bar
@@ -42,26 +83,7 @@ require([
     ],
     (Map, Graphic, MapView, FeatureLayer, MapImageLayer, GraphicsLayer, ImageParameters, SimpleFillSymbol, Circle, Point, Geoprocessor, LinearUnit, FeatureSet, Search, Scalebar, parser, BorderContainer, ContentPane, on, dom, lang) => {
 
-        roadsLayerBox = document.querySelector('input[id="roadsLayer"]');
-        demLayerBox = document.querySelector('input[id="demLayer"]');
 
-        var template = {
-            title: "Street Info for: {fullname}",
-            content: "<p>Street Name: {fullname}</p> <p>Zip: {zipcode_l}</p> <p>Speed Limit: {speed_lmt}</p>"
-        };
-
-        dem = new MapImageLayer({
-            url: "http://geoserver2.byu.edu/arcgis/rest/services/Valor/Elevations/MapServer"
-        });
-        dem.opacity = 0.5;
-        roadsLayer = new FeatureLayer({
-            url: "http://geoserver2.byu.edu/arcgis/rest/services/Valor/MyMapService/FeatureServer/0",
-            outFields: ["*"],
-            popupTemplate: template
-
-        });
-
-        //a graphics layer to show input point and output polygon
         var graphicsLayer = new GraphicsLayer();
 
         // symbol for input point
@@ -116,19 +138,12 @@ require([
             position: "top-right"
         });
 
-        // $('input[id=demLayer]').on('switchChange.bootstrapSwitch', function(event, state) { dem.visible = demLayerBox.checked; });
-        // $('input[id=roadsLayer]').on('switchChange.bootstrapSwitch', function(event, state) { roadsLayer.visible = roadsLayerBox.checked; });
-
         // create a new Geoprocessor 
         var gp = new Geoprocessor(pollutionServ);
-        var watershedGP = new Geoprocessor(watershedGeoServ);
         // define output spatial reference
-        gp.processSpatialReference = { // autocasts as new SpatialReference()
+        gp.processSpatialReference = {
             wkid: 32145 //EPSG3857
         };
-        watershedGP.processSpatialReference = {
-            wkid: 102100
-        }
 
         let featureSet, point;
 
@@ -151,61 +166,81 @@ require([
             inputGraphicContainer.push(inputGraphic);
             featureSet = new FeatureSet();
             featureSet.features = inputGraphicContainer;
-
+            validPoint = true;
             addCircle(event);
 
         });
 
-        document.getElementsByName("gp_button")[0].addEventListener("click", function(evt) {
-            // Submit gp
-            //Submitting job. Show loader
-
-            var bfDistance = new LinearUnit();
-            bfDistance.distance = bufDist;
-            bfDistance.units = "miles";
+        document.getElementsByName("gp_button")[0].addEventListener("click", (evt) => {
 
 
-            // input parameters 
-            var params = {
-                "Point": featureSet,
-                "Input_Buffer_Distanct": bfDistance
-            };
 
+            // Check if point is defined
+            if (!validPoint) {
+                return alert("Please select a point first");
+            }
 
             document.getElementById("gpLoader").style.display = "block";;
 
-            gp.submitJob(params).then((result) => {
-                    // Clear resultLayer if it exists
 
-                    if (resultLayer)
-                        map.layers.remove(resultLayer);
+            $.ajax({
+                    url: purpleAirSource,
+                    dataType: "json"
+
+                })
+                .done((airData) => {
+                    console.log("Successfull response");
+                    airData = airData.results;
+
+                    let featureSet = {
+                        "displayFieldName": "stationID",
+                        "geometryType": "esriGeometryPoint",
+                        "hasZ": false,
+                        "hasM": false,
+                        "spatialReference": {
+                            "wkid": 4326
+                        },
+                        "fields": [{
+                                "name": "objectid",
+                                "alias": "OBJECTID",
+                                "type": "esriFieldTypeOID"
+                            },
+                            {
+                                "name": "pm25",
+                                "alias": "PM2_5",
+                                "type": "esriFieldTypeDouble"
+                            },
+                            {
+                                "name": "AQI",
+                                "alias": "AQI",
+                                "type": "esriFieldTypeDouble"
+                            },
+
+                        ],
+                        "features": []
+                    };
+
+                    airData = airData.filter((result) => result['PM2_5Value'] && result.Lat && result.Lon && result.ID);
+
+                    featureSet.features = airData.map((result) => {
+                        return {
+                            "geometry": {
+                                x: result.Lon,
+                                y: result.Lat
+                            },
+                            "attributes": {
+                                "objectid": result.ID,
+                                "pm25": result['PM2_5Value'],
+                                "AQI": AQIPM25(result['PM2_5Value'])
+                            }
+                        }
+                    }).filter((result) => result.attributes.AQI)
 
 
-                    //set imageParameters
+                    submitJob(featureSet);
 
-                    var imageParams = new ImageParameters({
-                        format: "png32",
-                        dpi: 300
 
-                    });
-
-                    // get the task result as a MapImageLayer
-                    resultLayer = gp.getResultMapImageLayer(result.jobId);
-                    resultLayer.opacity = 0.7;
-                    resultLayer.title = "pollutionSurface";
-
-                    // add the result layer to the map
-                    map.layers.add(resultLayer);
-                    // Job done
-                    document.getElementById("gpLoader").style.display = "none";;
-                    document.getElementById("atr_table").style.display = "none";;
-
-                },
-                (err) => {
-                    console.log("gp error: ", err)
-                    document.getElementById("gpLoader").style.display = "none";;
-                },
-                (data) => { console.log(data.jobStatus, data) });
+                });
         })
 
         let symbologyCircle = {
@@ -244,9 +279,11 @@ require([
         function refresh() {
             if (resultLayer)
                 map.layers.remove(resultLayer);
+
+            validPoint = false;
             graphicsLayer.removeAll();
-            count = 0;
         }
+
         app = { refresh };
 
         function updateSliderDisplayValue(evt) {
@@ -256,21 +293,58 @@ require([
             addCircle();
         }
 
-        function drawResult(data) {
+        function submitJob(features) {
+            //Submitting job. Show loader
 
-            graphicsLayer.removeAll();
-            var polygon_feature = data.value.features[0];
-            polygon_feature.symbol = fillSymbol;
-            graphicsLayer.add(polygon_feature);
+            let bfDistance = new LinearUnit();
+            bfDistance.distance = bufDist;
+            bfDistance.units = "miles";
+
+
+            // input parameters 
+            let params = {
+                "Point": featureSet,
+                "input": bfDistance,
+                "Extent": "-12524097.4510535 4903579.64390832 -12413625.7225616 5009506.64939268",
+                "json_features": FeatureSet.fromJSON(features)
+            };
+
+            console.log(params);
+
+            gp.submitJob(params).then((result) => {
+                    // Clear resultLayer if it exists
+                    refresh();
+                    if (resultLayer)
+                        map.layers.remove(resultLayer);
+
+                    var imageParams = new ImageParameters({
+                        format: "png32",
+                        dpi: 300
+
+                    });
+
+                    // get the task result as a MapImageLayer
+                    resultLayer = gp.getResultMapImageLayer(result.jobId);
+                    resultLayer.opacity = 0.7;
+                    resultLayer.title = "pollutionSurface";
+
+                    // add the result layer to the map
+                    map.layers.add(resultLayer);
+                    // Job done
+
+                    document.getElementById("gpLoader").style.display = "none";;
+                    document.getElementById("atr_table").style.display = "none";;
+
+                },
+                (err) => {
+                    console.log("gp error: ", err)
+                    document.getElementById("gpLoader").style.display = "none";;
+                },
+                (data) => { console.log(data.jobStatus, data) }
+            );
+
         }
 
-        function hideElem() {
-            document.getElementById("atr_table").style.visiblility="hidden";
-            }
-
-        function showElem() {
-            document.getElementById("atr_table").style.visiblility="visible";
-            }
 
 
     });
